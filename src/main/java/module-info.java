@@ -5,4 +5,6 @@ module com.example.restaurant_simulator {
 
     opens com.example.restaurant_simulator to javafx.fxml;
     exports com.example.restaurant_simulator;
+    exports com.example.restaurant_simulator.controller;
+    opens com.example.restaurant_simulator.controller to javafx.fxml;
 }
