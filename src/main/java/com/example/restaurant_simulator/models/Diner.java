@@ -2,10 +2,13 @@ package com.example.restaurant_simulator.models;
 import javafx.scene.paint.Color;
 
 public class Diner {
+
+    private int id;
     private Color color;
     private int time;
 
-    public Diner(){
+    public Diner(int id){
+        this.id=id;
         this.time=0;
         this.color=GenerateColorRandom();
     }
@@ -28,7 +31,8 @@ public class Diner {
     @Override
     public String toString() {
         return "Diner{" +
-                "color=" + color +
+                "id=" + id +
+                ", color=" + color +
                 ", time=" + time +
                 '}';
     }

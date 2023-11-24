@@ -2,6 +2,7 @@ package com.example.restaurant_simulator.controller;
 
 import com.example.restaurant_simulator.models.Diner;
 import com.example.restaurant_simulator.models.DinerMonitor;
+import com.example.restaurant_simulator.threads.ConsumeQueueWait;
 import com.example.restaurant_simulator.threads.ProduceQueueWait;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -26,22 +27,36 @@ public class MainController implements Observer{
     @FXML
     void onClickedStart(MouseEvent event) {
         this.dinerMonitor=new DinerMonitor(10);
-        ProduceQueueWait cons =  new ProduceQueueWait(dinerMonitor);
+        ProduceQueueWait prod = new ProduceQueueWait(dinerMonitor);
+        ConsumeQueueWait cons= new ConsumeQueueWait(dinerMonitor);
         cons.addObserver(this);
-        Thread h1 = new Thread(cons);
-        h1.start();
+        prod.addObserver(this);
+        new Thread(prod).start();
+        new Thread(cons).start();
     }
 
     @Override
     public void update(Observable observable, Object o) {
         switch (Integer.valueOf(String.valueOf(o))) {
             case 1:
-                Diner popDiner=dinerMonitor.getNewDiner();
-                Rectangle square = new Rectangle(50, 50, popDiner.getColor());
-                Platform.runLater(()->{queue_wait.getChildren().add(square);});
+                addDinerToQueueWait();
+                break;
+            case 2:
+                Rectangle popDiner= (Rectangle) queue_wait.getChildren().get(0);
+                Platform.runLater(()->{
+                    enter_diner.setFill(popDiner.getFill());
+                    queue_wait.getChildren().remove(popDiner);
+                });
                 System.out.println(popDiner.toString());
                 break;
         }
+    }
+
+    public void addDinerToQueueWait(){
+        Diner newDiner=dinerMonitor.getNewDiner();
+        Rectangle square = new Rectangle(50, 50, newDiner.getColor());
+        Platform.runLater(()->{queue_wait.getChildren().add(square);});
+        System.out.println(newDiner.toString());
     }
 
 

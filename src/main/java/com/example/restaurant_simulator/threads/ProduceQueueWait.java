@@ -18,9 +18,7 @@ public class ProduceQueueWait  extends Observable implements Runnable{
     @Override
     public void run() {
         while (true){
-            Diner diner=this.dinerMonitor.generateDinersWait();
-            if (diner==null)
-                    return;
+            this.dinerMonitor.generateDinersWait();
             setChanged();
             notifyObservers("1");
         }

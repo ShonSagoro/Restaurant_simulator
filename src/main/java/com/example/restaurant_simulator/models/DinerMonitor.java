@@ -9,6 +9,7 @@ public class DinerMonitor {
     private Deque<Diner> queue_wait;
     private Diner enter;
     private int total;
+    private int id;
 
     @Override
     public String toString() {
@@ -21,29 +22,27 @@ public class DinerMonitor {
     public DinerMonitor(int total){
         this.queue_wait= new LinkedList<Diner>();
         this.total=total;
+        this.id=1;
     }
 
-    public  Diner generateDinersWait(){
-//        while (total == queue_wait.size() ) {
-//            try {
-//                this.wait();
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
-        if (total==queue_wait.size()){
-            return null;
+    public synchronized void generateDinersWait(){
+        while (total == queue_wait.size() ) {
+            try {
+                this.wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
-        Diner diner= new Diner();
+        Diner diner= new Diner(1);
+        this.id++;
         queue_wait.add(diner);
         try {
-            Thread.sleep(ThreadLocalRandom.current().nextInt(1000));
+            Thread.sleep(ThreadLocalRandom.current().nextInt(4000));
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-//        this.notify();
+        this.notifyAll();
         System.out.println(this.toString());
-        return diner;
     }
 
     public synchronized void extractDinersWait(){
@@ -56,11 +55,11 @@ public class DinerMonitor {
         }
         this.enter=this.queue_wait.remove();
         try {
-            Thread.sleep(ThreadLocalRandom.current().nextInt(1000));
+            Thread.sleep(ThreadLocalRandom.current().nextInt(2000));
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        this.notify();
+        this.notifyAll();
         System.out.println(enter.toString());
 
     }
