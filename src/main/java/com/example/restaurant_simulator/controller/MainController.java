@@ -41,6 +41,9 @@ public class MainController implements Observer{
     @FXML
     private Button btn_start;
 
+    @FXML
+    private Rectangle enter_waitress;
+
 
     @FXML
     private Rectangle add_command;
@@ -77,8 +80,6 @@ public class MainController implements Observer{
         this.dinerMonitor=new DinerMonitor(10, this.restaurant);
         this.chefMonitor=new ChefMonitor(this.restaurant);
         this.exitMonitor=new ExitMonitor(this.restaurant);
-
-
     }
 
     @FXML
@@ -116,17 +117,11 @@ public class MainController implements Observer{
     public void update(Observable observable, Object o) {
         switch (Integer.valueOf(String.valueOf(o))) {
             case 1:
-                System.out.println("1");
                 addDinerToQueueWait();
                 break;
             case 2:
-                System.out.println("2");
                 enterDinerToEntrace();
-                try {
-                    Thread.sleep(ThreadLocalRandom.current().nextInt(2000));
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                waitSecond(2);
                 sitDinerAtSomeTable();
                 makeOrder();
                 break;
@@ -139,11 +134,9 @@ public class MainController implements Observer{
         }
     }
 
-    public void leaveDiner(){
+    private void leaveDiner(){
         Diner diner=exitMonitor.removeFromExitQueue();
-        Node hboxNode=tables.getChildren().get(diner.getTableId());
-        HBox hbox=(HBox) hboxNode;
-        StackPane stackPane= (StackPane) hbox.getChildren().get(1);
+        StackPane stackPane= getTable(diner.getTableId());
         Rectangle rectangle=(Rectangle) stackPane.getChildren().get(0);
         Text text = (Text) stackPane.getChildren().get(1);
         Platform.runLater(()->{
@@ -152,34 +145,25 @@ public class MainController implements Observer{
             rectangle.setFill(EmptySpaceColor);
             exit_door.setFill(diner.getColor());
         });
-        try {
-            Thread.sleep(ThreadLocalRandom.current().nextInt(2000));
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        waitSecond(2);
         Platform.runLater(()->{
             exit_door.setFill(EmptySpaceColor);
             exit.setFill(diner.getColor());
         });
-        try {
-            Thread.sleep(ThreadLocalRandom.current().nextInt(2000));
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        waitSecond(2);
         Platform.runLater(()->{
             exit.setFill(EmptySpaceColor);
         });
 
     }
 
-    public void eatTimer(){
+    private void eatTimer(){
+        deliverCommand();
+        waitSecond(1);
         Diner diner=chefMonitor.getOrders().remove();
-        Node hboxNode=tables.getChildren().get(diner.getTableId());
-        HBox hbox=(HBox) hboxNode;
-        StackPane stackPane= (StackPane) hbox.getChildren().get(1);
+        StackPane stackPane=getTable(diner.getTableId());
         Text text = (Text) stackPane.getChildren().get(1);
         Timeline timeline = new Timeline();
-
         EventHandler<ActionEvent> eventHandler = event -> {
             Platform.runLater(()->{
                 text.setText(String.valueOf(diner.getTime()));
@@ -191,56 +175,114 @@ public class MainController implements Observer{
                 timeline.stop();
             }
         };
-
         KeyFrame keyFrame = new KeyFrame(Duration.seconds(1), eventHandler);
         timeline.getKeyFrames().add(keyFrame);
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
         countdown(diner);
+        waitSecond(1);
+        CheckCommands();
     }
 
-    public void countdown(Diner diner){
+    private void CheckCommands(){
+        Platform.runLater(()->{
+            wait_command.setFill(ChefColor);
+            cooking_command.setFill(ChefColor);
+            deliver_command.setFill(EmptySpaceColor);
+        });
+    }
+
+    private void deliverCommand(){
+        Platform.runLater(()->{
+            deliver_command.setFill(ChefColor);
+            cooking_command.setFill(EmptySpaceColor);
+            wait_command.setFill(EmptySpaceColor);
+        });
+    }
+
+    private void countdown(Diner diner){
         CounterToEat counterEatDiner=new CounterToEat(this.exitMonitor, diner);
         Thread CounterToEatThread=new Thread(counterEatDiner);
         CounterToEatThread.setDaemon(true);
         CounterToEatThread.start();
     }
-    public void makeOrder(){
+    private void makeOrder(){
         ProduceCommand produceCommand=new ProduceCommand(this.chefMonitor);
         Thread produceCommandThread=new Thread(produceCommand);
         produceCommandThread.setDaemon(true);
         produceCommandThread.start();
+        workChef();
     }
 
-    public void enterDinerToEntrace(){
+    private void workChef(){
+        Platform.runLater(()->{
+            wait_command.setFill(EmptySpaceColor);
+            deliver_command.setFill(EmptySpaceColor);
+            cooking_command.setFill(ChefColor);
+        });
+    }
+
+    private void enterDinerToEntrace(){
         Rectangle popDiner= (Rectangle) queue_wait.getChildren().get(0);
         Platform.runLater(()->{
             enter_diner.setFill(popDiner.getFill());
             queue_wait.getChildren().remove(popDiner);
         });
     }
-    public void sitDinerAtSomeTable(){
+    private void sitDinerAtSomeTable(){
         for(Node hboxNode:tables.getChildren()){
             HBox hbox=(HBox) hboxNode;
+            Rectangle waitress = (Rectangle) hbox.getChildren().get(0);
             StackPane stackPane= (StackPane) hbox.getChildren().get(1);
-            Rectangle rectangle = (Rectangle) stackPane.getChildren().get(0);
-            Text text = (Text) stackPane.getChildren().get(1);
-            if(EmptySpaceColor.equals(rectangle.getFill())){
-                Platform.runLater(()->{
-                    rectangle.setFill(enter_diner.getFill());
-                    text.setFill(Color.BLACK);
-                    text.setText("-W");
-                    enter_diner.setFill(EmptySpaceColor);
-                });
+            Rectangle diner = (Rectangle) stackPane.getChildren().get(0);
+            if(EmptySpaceColor.equals(diner.getFill())){
+                sitDiner(waitress, stackPane);
+                waitSecond(1);
+                waitresReturnEntrace(waitress);
                 break;
             }
         }
     }
-    public void addDinerToQueueWait(){
+
+    private void sitDiner( Rectangle waitress,StackPane stackPane){
+        Rectangle diner = (Rectangle) stackPane.getChildren().get(0);
+        Text text = (Text) stackPane.getChildren().get(1);
+        Platform.runLater(()->{
+            enter_waitress.setFill(EmptySpaceColor);
+            waitress.setFill(WaitresColor);
+            diner.setFill(enter_diner.getFill());
+            text.setFill(Color.BLACK);
+            text.setText("-W");
+            enter_diner.setFill(EmptySpaceColor);
+        });
+    }
+
+    private void waitresReturnEntrace(Rectangle waitress){
+        Platform.runLater(()->{
+            enter_waitress.setFill(WaitresColor);
+            waitress.setFill(EmptySpaceColor);
+        });
+    }
+    private void addDinerToQueueWait(){
         Diner newDiner=this.dinerMonitor.getQueue_wait().getLast();
         Rectangle square = new Rectangle(50, 50, newDiner.getColor());
         square.setArcHeight(30);
         square.setArcWidth(30);
         Platform.runLater(()->{queue_wait.getChildren().add(square);});
+    }
+
+    private void waitSecond(int second){
+        int milliseconds= second*1000;
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private StackPane getTable(int id){
+        Node hboxNode=tables.getChildren().get(id);
+        HBox hbox=(HBox) hboxNode;
+        return  (StackPane) hbox.getChildren().get(1);
     }
 }

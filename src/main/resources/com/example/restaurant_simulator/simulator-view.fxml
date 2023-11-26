@@ -331,7 +331,7 @@
                   <Rectangle fx:id="enter_diner" arcHeight="5.0" arcWidth="5.0" fill="#232424" height="50.0" stroke="WHITE" strokeType="INSIDE" style="-fx-arc-height: 30; -fx-arc-width: 30;" width="50.0" />
                   <VBox alignment="BOTTOM_CENTER" prefHeight="6.0" prefWidth="100.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#f87b72" height="50.0" stroke="#f87b72" strokeType="INSIDE" style="-fx-arc-height: 30; -fx-arc-width: 30;" width="50.0" />
+                        <Rectangle fx:id="enter_waitress" arcHeight="5.0" arcWidth="5.0" fill="#f87b72" height="50.0" stroke="#f87b72" strokeType="INSIDE" style="-fx-arc-height: 30; -fx-arc-width: 30;" width="50.0" />
                      </children>
                   </VBox>
                   <Rectangle fx:id="exit_door" arcHeight="5.0" arcWidth="5.0" fill="#232424" height="50.0" stroke="WHITE" strokeType="INSIDE" style="-fx-arc-height: 30; -fx-arc-width: 30;" width="50.0" />
@@ -363,9 +363,7 @@
       </HBox>
       <HBox alignment="TOP_RIGHT">
          <children>
-            <HBox fx:id="queue_wait" alignment="TOP_RIGHT" prefHeight="50.0" prefWidth="758.0" spacing="10.0">
-               <children>
-               </children>
+            <HBox fx:id="queue_wait" alignment="TOP_RIGHT" nodeOrientation="RIGHT_TO_LEFT" prefHeight="50.0" prefWidth="68.0" spacing="10.0">
                <padding>
                   <Insets left="10.0" right="10.0" />
                </padding>
