@@ -1,9 +1,11 @@
 package com.example.restaurant_simulator.models;
+import com.example.restaurant_simulator.models.enums.DinerState;
 import javafx.scene.paint.Color;
 
 public class Diner {
-
+    private DinerState state;
     private int id;
+    private  int tableId;
     private Color color;
     private int time;
 
@@ -11,6 +13,8 @@ public class Diner {
         this.id=id;
         this.time=0;
         this.color=GenerateColorRandom();
+        this.state=DinerState.WAIT;
+        this.tableId=-1;
     }
 
     private Color GenerateColorRandom(){
@@ -28,16 +32,38 @@ public class Diner {
         return time;
     }
 
+    public DinerState getState() {
+        return state;
+    }
+
+    public void setState(DinerState state) {
+        this.state = state;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
+    }
+
+    public int getTableId() {
+        return tableId;
+    }
+
+    public void setTableId(int tableId) {
+        this.tableId = tableId;
+    }
+
     @Override
     public String toString() {
         return "Diner{" +
-                "id=" + id +
+                "state=" + state +
+                ", id=" + id +
+                ", tableId=" + tableId +
                 ", color=" + color +
                 ", time=" + time +
                 '}';
     }
 
-    public void setColor(Color color) {
-        this.color = color;
+    public void decrementTime(){
+        this.time--;
     }
 }

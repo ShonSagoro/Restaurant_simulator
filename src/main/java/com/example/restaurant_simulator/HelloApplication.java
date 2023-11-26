@@ -11,10 +11,9 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("simulator-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1000, 800);
+        Scene scene = new Scene(fxmlLoader.load(), 1000, 1000);
         stage.setTitle("Simulator_Restaurant");
         stage.setScene(scene);
-        stage.setResizable(Boolean.FALSE);
         stage.show();
     }
 

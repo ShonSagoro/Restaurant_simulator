@@ -1,5 +1,8 @@
 package com.example.restaurant_simulator.models;
 
+import com.example.restaurant_simulator.models.enums.DinerState;
+
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -7,6 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class DinerMonitor {
     private Deque<Diner> queue_wait;
+    private Restaurant restaurant;
     private Diner enter;
     private int total;
     private int id;
@@ -19,59 +23,56 @@ public class DinerMonitor {
                 '}';
     }
 
-    public DinerMonitor(int total){
+    public DinerMonitor(int total, Restaurant restaurant){
         this.queue_wait= new LinkedList<Diner>();
+        this.restaurant=restaurant;
+        this.enter=null;
         this.total=total;
-        this.id=1;
+        this.id=20;
     }
 
     public synchronized void generateDinersWait(){
-        while (total == queue_wait.size() ) {
+        while (total == queue_wait.size()) {
             try {
                 this.wait();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
-        Diner diner= new Diner(1);
+        Diner diner= new Diner(id);
         this.id++;
         queue_wait.add(diner);
-        try {
-            Thread.sleep(ThreadLocalRandom.current().nextInt(4000));
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        this.notifyAll();
-        System.out.println(this.toString());
-    }
-
-    public synchronized void extractDinersWait(){
-        while (queue_wait.size() == 0 ) {
-            try {
-                this.wait();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        this.enter=this.queue_wait.remove();
         try {
             Thread.sleep(ThreadLocalRandom.current().nextInt(2000));
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
         this.notifyAll();
-        System.out.println(enter.toString());
-
     }
 
+    public synchronized void extractDinersWait(){
+        while (queue_wait.size() == 0 || restaurant.isFull()) {
+            try {
+                this.wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
-    public Diner getEnter() {
-        return enter;
+        this.enter=this.queue_wait.getFirst();
+        this.enter.setState(DinerState.SIT_WITHOUT_ORDER);
+        this.restaurant.setData(this.getEnter());
+        try {
+            Thread.sleep(ThreadLocalRandom.current().nextInt(2000));
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        this.queue_wait.removeFirst();
+        this.notifyAll();
     }
 
-    public Diner getNewDiner() {
-        return queue_wait.getLast();
-    }
+    public Diner getEnter() { return this.enter; }
 
+    public Deque<Diner> getQueue_wait() {return queue_wait;}
 
 }
