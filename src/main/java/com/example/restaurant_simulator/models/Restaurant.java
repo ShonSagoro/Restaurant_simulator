@@ -24,14 +24,6 @@ public class Restaurant {
         return true;
     }
 
-    public boolean isEmpty(){
-        for (Table table : this.tables) {
-            if (TableState.BUSY.equals(table.getState()))
-                return false;
-        }
-        return true;
-    }
-
     public void setData(Diner diner){
         for (int i = 0; i < this.tables.length; i++) {
             if(TableState.EMPTY.equals(this.tables[i].getState())) {

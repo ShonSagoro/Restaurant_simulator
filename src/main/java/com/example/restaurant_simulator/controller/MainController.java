@@ -9,18 +9,17 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Queue;
 import java.util.concurrent.ThreadLocalRandom;
+
 
 
 public class MainController implements Observer{
@@ -28,32 +27,60 @@ public class MainController implements Observer{
 
     private ExitMonitor exitMonitor;
 
+    private Restaurant restaurant;
+
+    private ChefMonitor chefMonitor;
+
+    private final Color EmptySpaceColor=Color.web("#232424");
+
+
+    private final Color WaitresColor=Color.web("#f87b72");
+
+    private final Color ChefColor=Color.web("#7dc0ff");
+
+    @FXML
+    private Button btn_start;
+
+
+    @FXML
+    private Rectangle add_command;
+
+    @FXML
+    private Rectangle cooking_command;
+
+    @FXML
+    private Rectangle deliver_command;
+
+    @FXML
+    private Rectangle enter_diner;
+
     @FXML
     private Rectangle exit;
 
     @FXML
     private Rectangle exit_door;
 
-    private Restaurant restaurant;
-
-    private ChefMonitor chefMonitor;
-
     @FXML
     private HBox queue_wait;
+
+    @FXML
+    private Rectangle receive_command;
 
     @FXML
     private GridPane tables;
 
     @FXML
-    private Rectangle enter_diner;
-
+    private Rectangle wait_command;
     @FXML
     public void initialize() {
         this.restaurant=new Restaurant();
         this.dinerMonitor=new DinerMonitor(10, this.restaurant);
         this.chefMonitor=new ChefMonitor(this.restaurant);
         this.exitMonitor=new ExitMonitor(this.restaurant);
+
+
     }
+
     @FXML
     void onClickedStart(MouseEvent event) {
         initSimulation();
@@ -104,17 +131,15 @@ public class MainController implements Observer{
                 makeOrder();
                 break;
             case 3:
-                System.out.println("3");
                 eatTimer();
                 break;
             case 4:
-                System.out.println("4");
                 leaveDiner();
                 break;
         }
     }
+
     public void leaveDiner(){
-        Color emptyTableColor = Color.web("#6d7f97");
         Diner diner=exitMonitor.removeFromExitQueue();
         Node hboxNode=tables.getChildren().get(diner.getTableId());
         HBox hbox=(HBox) hboxNode;
@@ -122,9 +147,9 @@ public class MainController implements Observer{
         Rectangle rectangle=(Rectangle) stackPane.getChildren().get(0);
         Text text = (Text) stackPane.getChildren().get(1);
         Platform.runLater(()->{
-            text.setText(String.valueOf(0));
+            text.setText("-");
             text.setFill(Color.WHITE);
-            rectangle.setFill(emptyTableColor);
+            rectangle.setFill(EmptySpaceColor);
             exit_door.setFill(diner.getColor());
         });
         try {
@@ -133,7 +158,7 @@ public class MainController implements Observer{
             throw new RuntimeException(e);
         }
         Platform.runLater(()->{
-            exit_door.setFill(Color.TRANSPARENT);
+            exit_door.setFill(EmptySpaceColor);
             exit.setFill(diner.getColor());
         });
         try {
@@ -142,7 +167,7 @@ public class MainController implements Observer{
             throw new RuntimeException(e);
         }
         Platform.runLater(()->{
-            exit.setFill(Color.TRANSPARENT);
+            exit.setFill(EmptySpaceColor);
         });
 
     }
@@ -179,14 +204,12 @@ public class MainController implements Observer{
         Thread CounterToEatThread=new Thread(counterEatDiner);
         CounterToEatThread.setDaemon(true);
         CounterToEatThread.start();
-        System.out.println("Count!");
     }
     public void makeOrder(){
         ProduceCommand produceCommand=new ProduceCommand(this.chefMonitor);
         Thread produceCommandThread=new Thread(produceCommand);
         produceCommandThread.setDaemon(true);
         produceCommandThread.start();
-        System.out.println("Entre mampo");
     }
 
     public void enterDinerToEntrace(){
@@ -197,34 +220,27 @@ public class MainController implements Observer{
         });
     }
     public void sitDinerAtSomeTable(){
-        Color emptyTableColor = Color.web("#6d7f97");
         for(Node hboxNode:tables.getChildren()){
             HBox hbox=(HBox) hboxNode;
             StackPane stackPane= (StackPane) hbox.getChildren().get(1);
             Rectangle rectangle = (Rectangle) stackPane.getChildren().get(0);
             Text text = (Text) stackPane.getChildren().get(1);
-            if(emptyTableColor.equals(rectangle.getFill())){
+            if(EmptySpaceColor.equals(rectangle.getFill())){
                 Platform.runLater(()->{
                     rectangle.setFill(enter_diner.getFill());
                     text.setFill(Color.BLACK);
                     text.setText("-W");
-                    enter_diner.setFill(Color.web("#cfcfcf00"));
+                    enter_diner.setFill(EmptySpaceColor);
                 });
-                System.out.println(rectangle.toString());
-                System.out.println("table size"+tables.getChildren().size());
-                System.out.println(hbox.getChildren().toString());
                 break;
             }
         }
     }
     public void addDinerToQueueWait(){
-        System.out.println("DinerMonitor: "+this.dinerMonitor.toString());
-        System.out.println("DinerMonitor: "+this.dinerMonitor.getQueue_wait().getLast().toString());
-
         Diner newDiner=this.dinerMonitor.getQueue_wait().getLast();
         Rectangle square = new Rectangle(50, 50, newDiner.getColor());
+        square.setArcHeight(30);
+        square.setArcWidth(30);
         Platform.runLater(()->{queue_wait.getChildren().add(square);});
     }
-
-
 }

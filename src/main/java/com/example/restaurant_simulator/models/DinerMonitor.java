@@ -2,10 +2,8 @@ package com.example.restaurant_simulator.models;
 
 import com.example.restaurant_simulator.models.enums.DinerState;
 
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DinerMonitor {

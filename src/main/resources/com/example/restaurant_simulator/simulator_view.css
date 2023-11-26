@@ -1,0 +1,9 @@
+#btn_start {
+    -fx-background-color: #232424;
+    -fx-border-color: #ffffff;
+}
+
+#btn_start:hover {
+    -fx-background-color: #05050e;
+    -fx-border-color: #ffffff;
+}

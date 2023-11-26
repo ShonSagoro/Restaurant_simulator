@@ -4,8 +4,6 @@ import com.example.restaurant_simulator.models.Diner;
 import com.example.restaurant_simulator.models.ExitMonitor;
 import com.example.restaurant_simulator.models.enums.DinerState;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 public class CounterToEat implements Runnable {
     private ExitMonitor exitMonitor;
     private Diner diner;

@@ -1,8 +1,6 @@
 package com.example.restaurant_simulator.threads;
 
 import com.example.restaurant_simulator.models.ChefMonitor;
-
-import java.util.Observable;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ProduceCommand implements Runnable{

@@ -11,11 +11,7 @@ public class ExitMonitor {
     private Restaurant restaurant;
     private Diner exit;
 
-    private Deque<Diner> eatingQueue;
-
-
     public ExitMonitor( Restaurant restaurant) {
-        this.eatingQueue = new LinkedList<Diner>();
         this.exitQueue = new LinkedList<Diner>();
         this.restaurant=restaurant;
     }
@@ -28,6 +24,7 @@ public class ExitMonitor {
             }
         }
         this.exit=this.exitQueue.getFirst();
+        this.exit.setState(DinerState.EXIT);
         restaurant.removeDinnerByTableId(exit.getTableId());
         try {
             Thread.sleep(ThreadLocalRandom.current().nextInt(2000));
@@ -50,8 +47,6 @@ public class ExitMonitor {
                 dinerOrder.setState(DinerState.WAIT_ORDER);
                 this.exitQueue.add(dinerOrder);
             }
-            System.out.println("SALIR"+this.exitQueue.toString());
-
         try {
             Thread.sleep(ThreadLocalRandom.current().nextInt(2000));
         } catch (InterruptedException e) {
@@ -63,7 +58,4 @@ public class ExitMonitor {
     public Diner removeFromExitQueue(){
         return this.exitQueue.remove();
     }
-
-
-
 }
