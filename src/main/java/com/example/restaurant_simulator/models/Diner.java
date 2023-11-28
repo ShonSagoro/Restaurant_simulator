@@ -54,12 +54,12 @@ public class Diner {
 
     @Override
     public String toString() {
-        return "Diner{" +
-                "state=" + state +
-                ", id=" + id +
-                ", tableId=" + tableId +
-                ", color=" + color +
-                ", time=" + time +
+        return "Diner {" +
+                "state =" + state +
+                ", id =" + id +
+                ", tableId =" + tableId +
+                ", color =" + color +
+                ", time =" + time +
                 '}';
     }
 
