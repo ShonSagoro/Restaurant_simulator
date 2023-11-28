@@ -29,9 +29,9 @@ public class Table {
 
     @Override
     public String toString() {
-        return "Table{" +
-                "diner=" + diner +
-                ", state=" + state +
-                '}';
+        return "Table {" +
+                "diner = " + diner +
+                ", state = " + state +
+                '} ';
     }
 }

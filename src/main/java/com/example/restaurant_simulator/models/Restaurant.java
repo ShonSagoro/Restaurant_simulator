@@ -54,9 +54,9 @@ public class Restaurant {
 
     @Override
     public String toString() {
-        return "Restaurant{" +
-                "tables=" + Arrays.toString(tables) +
-                '}';
+        return "Restaurant {" +
+                "tables =" + Arrays.toString(tables) +
+                '} ';
     }
 
 }
