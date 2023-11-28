@@ -13,13 +13,6 @@ public class DinerMonitor {
     private int total;
     private int id;
 
-    @Override
-    public String toString() {
-        return "DinerMonitor{" +
-                "queue_wait=" + queue_wait +
-                ", total=" + total +
-                '}';
-    }
 
     public DinerMonitor(int total, Restaurant restaurant){
         this.queue_wait= new LinkedList<Diner>();
